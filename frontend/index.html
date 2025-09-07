@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 사진관</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">AI 사진관</div>
+      <div class="spacer"></div>
+      <a class="link" href="../docs/AI-사진관-프로젝트-계획서.md" target="_blank">Docs</a>
+    </header>
+
+    <main class="container">
+      <section class="panel left">
+        <h1 class="title">대시보드</h1>
+
+        <div class="guide-toggle" onclick="toggleGuide()">
+          <span>📖 사용법 보기</span>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="guide" id="guideContent" hidden>
+          <div class="step"><b>1.</b> 카메라로 촬영하거나 이미지를 업로드하세요.</div>
+          <div class="step"><b>2.</b> 아래 테마 버튼을 누르면 즉시 생성됩니다. 여권/증명은 규격으로 생성돼요.</div>
+          <div class="step"><b>3.</b> 결과는 오른쪽에 표시되며 다운로드할 수 있어요.</div>
+        </div>
+
+        <div class="stack">
+          <div class="card">
+            <div class="card-head">카메라</div>
+            <div class="camera">
+              <video id="camVideo" autoplay playsinline muted></video>
+              <canvas id="camCanvas" class="hidden"></canvas>
+            </div>
+            <div class="row gap8 button-row">
+              <button id="openCam" class="button">카메라 열기</button>
+              <button id="shotCam" class="button" disabled>촬영</button>
+              <button id="closeCam" class="button" disabled>종료</button>
+              <label class="row gap8" style="margin-left:auto; font-size:12px; color: var(--subtle);">
+                <input id="mirrorToggle" type="checkbox" /> 거울 모드
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">사진 업로드</div>
+            <div id="dropzone" class="dropzone">
+              <input id="fileInput" type="file" accept="image/*" hidden />
+              <div class="dz-instructions">이미지를 드래그하거나 클릭하여 업로드</div>
+              <img id="preview" class="preview" alt="preview" />
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">테마</div>
+            <div class="chips" id="categoryChips">
+              <button class="chip active" data-cat="all">All</button>
+              <button class="chip" data-cat="essentials">Essentials</button>
+              <button class="chip" data-cat="studio">Studio</button>
+              <button class="chip" data-cat="travel">Travel/Activity</button>
+              <button class="chip" data-cat="cinematic">Cinematic</button>
+              <button class="chip" data-cat="style">Style</button>
+              <button class="chip" data-cat="creative">Creative</button>
+              <button class="chip" data-cat="space">Space/Time</button>
+            </div>
+            <div class="row gap8 mt8 gender-row">
+              <span class="label">표현</span>
+              <div class="seg gender" id="genderSeg">
+                <button class="button sm" data-gender="auto">자동</button>
+                <button class="button sm" data-gender="male">남성</button>
+                <button class="button sm" data-gender="neutral">중성</button>
+                <button class="button sm" data-gender="female">여성</button>
+              </div>
+            </div>
+            <div class="row gap8 mt8 shots-row">
+              <span class="label">매수</span>
+              <div class="seg shots" id="shotsSeg">
+                <button class="button sm" data-shots="1">1장</button>
+                <button class="button sm" data-shots="2">2장</button>
+                <button class="button sm" data-shots="3">3장</button>
+              </div>
+            </div>
+            <div class="theme-grid mt8" id="themeButtons">
+              <button class="button" data-theme="resume" data-cat="essentials">Resume</button>
+              <button class="button" data-theme="passport" data-cat="essentials">Passport</button>
+              <button class="button" data-theme="baby_studio" data-cat="essentials">Baby-Studio</button>
+              <button class="button" data-theme="memory" data-cat="studio">Memory</button>
+              <button class="button" data-theme="model" data-cat="studio">Model</button>
+              <button class="button" data-theme="profession" data-cat="studio">Profession</button>
+              <button class="button" data-theme="wedding" data-cat="studio">Wedding</button>
+              <button class="button" data-theme="traditional" data-cat="studio">Traditional</button>
+              <button class="button" data-theme="graduation" data-cat="studio">Graduation</button>
+              <button class="button" data-theme="lookbook" data-cat="studio">Lookbook</button>
+              <button class="button" data-theme="makeover" data-cat="studio">Makeover</button>
+              <button class="button" data-theme="travel" data-cat="travel">Travel</button>
+              <button class="button" data-theme="activity" data-cat="travel">Activity</button>
+              <button class="button" data-theme="film" data-cat="cinematic">Film</button>
+              <button class="button" data-theme="actor" data-cat="cinematic">Actor</button>
+              <button class="button" data-theme="aerial_set" data-cat="cinematic">Aerial-Set</button>
+              <button class="button" data-theme="retro" data-cat="style">Retro</button>
+              <button class="button" data-theme="musician" data-cat="style">Musician</button>
+              <button class="button" data-theme="kpop" data-cat="style">K-pop</button>
+              <button class="button" data-theme="fantasy_real" data-cat="creative">Fantasy-Real</button>
+              <button class="button" data-theme="fantasy_anime" data-cat="creative">Fantasy-Anime</button>
+              <button class="button" data-theme="anime" data-cat="creative">Anime</button>
+              <button class="button meme" data-theme="meme" data-cat="creative">Meme</button>
+              <button class="button" data-theme="cosmos" data-cat="space">Cosmos</button>
+              <button class="button" data-theme="timetravel" data-cat="space">TimeTravel</button>
+              <button class="button" data-theme="animal" data-cat="space">Animal</button>
+              <button class="button" data-theme="lifestage" data-cat="space">Lifestage</button>
+            </div>
+          </div>
+
+          <div id="error" class="error" role="alert" hidden></div>
+        </div>
+      </section>
+
+      <section class="panel right">
+        <h1 class="title">결과</h1>
+        <div id="result" class="result">
+          <div class="placeholder">생성된 이미지가 여기에 표시됩니다</div>
+        </div>
+        <div class="row gap8 mt8">
+          <button id="downloadBtn" class="button" disabled>다운로드</button>
+          <a id="savedLink" class="link" target="_blank" rel="noopener"></a>
+        </div>
+
+        <div class="gallery" id="gallery"></div>
+      </section>
+    </main>
+
+    <div id="spinner" class="spinner" hidden>
+      <div class="loader"></div>
+    </div>
+
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="lightbox-body">
+        <img id="lightboxImg" alt="preview" />
+      </div>
+    </div>
+
+    <script src="components.js"></script>
+    <script>
+      console.log('Components loaded:', typeof window.UI, typeof window.Camera);
+      window.addEventListener('load', function() {
+        console.log('Page loaded');
+      });
+
+      // Guide toggle function
+      function toggleGuide() {
+        const guide = document.getElementById('guideContent');
+        const toggle = document.querySelector('.guide-toggle');
+        
+        if (guide.hidden) {
+          guide.hidden = false;
+          toggle.classList.add('expanded');
+        } else {
+          guide.hidden = true;
+          toggle.classList.remove('expanded');
+        }
+      }
+    </script>
+    <script src="app.js"></script>
+  </body>
+  </html>
